@@ -6,6 +6,7 @@ const logger = require("morgan");
 const { queryParser } = require("express-query-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const MongooseService = require("~/services/mongoose.service");
 
 const app = express();
 
@@ -34,6 +35,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+MongooseService.connectDB();
 
 app.use("/", require("~/routes"));
 
