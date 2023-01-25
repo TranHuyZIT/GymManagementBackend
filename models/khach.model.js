@@ -12,15 +12,13 @@ const KhachSchema = new mongoose.Schema(
 			type: Date,
 			require: true,
 			validate: function (input) {
-				/* return true only if the input is a valid date, AND is 
-                greater than or equal to the current date/time */
 				return (
 					typeof new Date(input) === "date" &&
 					new Date(input) >= new Date()
 				);
 			},
 			message: (input) =>
-				`${input} must be greater than or equal to the current date!`,
+				`${input} phải sớm hơn ngày hiện tại`,
 		},
 		// true là nam
 		gioitinh: {
@@ -31,6 +29,38 @@ const KhachSchema = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
+		dkytap: [
+			{
+				ngaydk: {
+					type: Date,
+					require: true,
+				},
+				ngayhethan: {
+					type: Date,
+					require: true,
+				},
+				magoitap: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "GoiTap",
+				},
+			},
+		],
+		dkypt: [
+			{
+				ngaydk: {
+					type: Date,
+					require: true,
+				},
+				ngayhethan: {
+					type: Date,
+					require: true,
+				},
+				magoipt: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "GoiPT",
+				},
+			},
+		],
 	},
 	{
 		timestamps: true,
