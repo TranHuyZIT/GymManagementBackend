@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
 
-const Khach = new mongoose.Schema(
+const PT = new mongoose.Schema(
 	{
 		ten: {
 			type: String,
@@ -29,47 +29,33 @@ const Khach = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
-		dkytap: [
-			{
-				ngaydk: {
-					type: Date,
-					require: true,
-				},
-				ngayhethan: {
-					type: Date,
-					require: true,
-				},
-				magoitap: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "GoiTap",
-				},
-			},
-		],
-		dkypt: [
-			{
-				ngaydk: {
-					type: Date,
-					require: true,
-				},
-				ngayhethan: {
-					type: Date,
-					require: true,
-				},
-				magoipt: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "GoiPT",
-				},
-			},
-		],
+		chieucao: {
+			type: Number,
+			require: true,
+			validate: (input) => input >= 0,
+			message: () =>
+				"Chiều cao phải là số lớn hơn bằng 0",
+		},
+		cannang: {
+			type: Number,
+			require: true,
+			validate: (input) => input >= 0,
+			message: () =>
+				"Cân nặng phải là số lớn hơn bằng 0",
+		},
+		isDeleted: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{
 		timestamps: true,
 	}
 );
 
-MongooseService.setupSoftDelete(Khach);
+MongooseService.setupSoftDelete(PT);
 
 module.exports = {
-	schema: Khach,
-	model: mongoose.model("Khach", Khach),
+	schema: PT,
+	model: mongoose.model("PT", PT),
 };

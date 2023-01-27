@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
 
-const GoiTapSchema = new mongoose.Schema({
+const GoiTap = new mongoose.Schema({
 	ten: {
 		type: String,
 		require: true,
@@ -21,6 +21,10 @@ const GoiTapSchema = new mongoose.Schema({
 		default: false,
 	},
 });
-MongooseService.setupSoftDelete(GoiTapSchema);
 
-module.exports = mongoose.model("GoiTap", GoiTapSchema);
+MongooseService.setupSoftDelete(GoiTap);
+
+module.exports = {
+	schema: GoiTap,
+	model: mongoose.model("GoiTap", GoiTap),
+};

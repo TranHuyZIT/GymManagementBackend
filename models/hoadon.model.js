@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
+const MongooseService = require("~/services/mongoose.service");
+const ptModel = require("./pt.model");
+const GoiPTSchema = require("./goipt.model").schema;
+const GoiTapSchema = require("./goitap.model").schema;
+const KhachSchema = require("./khach.model").schema;
+const PTSchema = require("./pt.model").schema;
 
-const HoaDonSchema = new mongoose.Schema({
+const HoaDon = new mongoose.Schema({
 	ngaylap: {
 		type: Date,
 		require: true,
@@ -9,10 +15,37 @@ const HoaDonSchema = new mongoose.Schema({
 		type: BigInt,
 		require: true,
 	},
-	chitiettap: [{}],
-	chitietpt: [{}],
-	khach: [{}],
+	chitiettap: [
+		{
+			goitap: GoiTapSchema,
+			khach: KhachSchema,
+			tien: {
+				type: BigInt,
+				require: true,
+			},
+		},
+	],
+	chitietpt: [
+		{
+			goipt: GoiPTSchema,
+			khach: KhachSchema,
+			pt: PTSchema,
+			tien: {
+				type: BigInt,
+				require: true,
+			},
+		},
+	],
 	khuyenmai: {},
+	isDeleted: {
+		type: Boolean,
+		default: false,
+	},
 });
 
-module.exports = mongoose.model("HoaDon", HoaDonSchema);
+MongooseService.setupSoftDelete(HoaDon);
+
+module.exports = {
+	schema: HoaDon,
+	model: mongoose.model("HoaDon", HoaDon),
+};
