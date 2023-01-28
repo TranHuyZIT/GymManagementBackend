@@ -1,9 +1,8 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
-const MongooseService = require("~/services/mongoose.service");
 const KhachSchema = require("~/models/khach.model").schema;
 const PTSchema = require("~/models/pt.model");
-const LichHuongDan = mongoose.Schema({
+const LichHuongDan = new mongoose.Schema({
 	ngaybd: {
 		type: Date,
 		require: true,
