@@ -9,14 +9,16 @@ const PhieuNhap = new mongoose.Schema({
 	ngaynhap: {
 		type: Date,
 		require: true,
-		validate: function (input) {
-			return (
-				typeof new Date(input) === "date" &&
-				new Date(input) >= new Date()
-			);
+		validate: {
+			validator: function (input) {
+				return (
+					typeof new Date(input) === "date" &&
+					new Date(input) >= new Date()
+				);
+			},
+			message: (input) =>
+				`${input} phải sớm hơn ngày hiện tại`,
 		},
-		message: (input) =>
-			`${input} phải sớm hơn ngày hiện tại`,
 	},
 	tongtien: {
 		type: BigInt,
