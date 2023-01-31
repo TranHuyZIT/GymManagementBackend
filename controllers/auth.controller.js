@@ -9,6 +9,37 @@ class AuthController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
+	async taouser(req, res) {
+		try {
+			const { mk, tk, ...rest } = req.body;
+			const availableUser = await UserModel.findOne({
+				tk,
+			});
+			if (availableUser)
+				throw new Error("Tài Khoản Đã Tồn Tại");
+			const hashedPassword = await PasswordUtil.hash(
+				mk
+			);
+			const newUser = new UserModel({
+				...rest,
+				mk: hashedPassword,
+				tk,
+			});
+			await newUser.save();
+
+			return res.status(200).json(newUser);
+		} catch (error) {
+			res.send({
+				msg: error.message,
+			});
+		}
+	}
+	/**
+	 *
+	 * @param {import('express').Request} req
+	 * @param {import('express').Response} res
+	 * @param {Function} next
+	 */
 	async dangnhap(req, res) {
 		try {
 			const { tk, mk } = req.body;

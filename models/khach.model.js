@@ -11,23 +11,13 @@ const Khach = new mongoose.Schema(
 		ngaysinh: {
 			type: Date,
 			require: true,
-			validate: {
-				validator: function (input) {
-					return (
-						typeof new Date(input) === "date" &&
-						new Date(input) >= new Date()
-					);
-				},
-				message: (input) =>
-					`${input} phải sớm hơn ngày hiện tại`,
-			},
 		},
 		// true là nam
 		gioitinh: {
 			type: Boolean,
 			default: true,
 		},
-		cccd: {
+		sdt: {
 			type: String,
 			require: true,
 		},
@@ -63,6 +53,11 @@ const Khach = new mongoose.Schema(
 				},
 			},
 		],
+		isDeleted: {
+			type: Boolean,
+			require: true,
+			default: false,
+		},
 	},
 	{
 		timestamps: true,
