@@ -45,4 +45,10 @@ router.use(
 	userAuth,
 	require("~/routes/hoadon.route")
 );
+router.use(
+	"/khuyenmai",
+	userAuth,
+	adminAuth,
+	require("~/routes/khuyenmai.route")
+);
 module.exports = router;
