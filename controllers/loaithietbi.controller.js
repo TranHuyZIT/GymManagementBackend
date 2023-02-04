@@ -1,17 +1,16 @@
-const KhuyenMaiModel =
-	require("~/models/khuyenmai.model").model;
-class KhuyenMaiController {
+const LoaiThietBiModel =
+	require("~/models/loaithietbi.model").model;
+class LoaiThietBiController {
 	/**
 	 *
 	 * @param {import('express').Request} req
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async laytatcakhuyenmai(req, res) {
+	async laytatcaloaitb(req, res) {
 		try {
-			const allKhuyenMais =
-				await KhuyenMaiModel.find();
-			return res.status(200).json(allKhuyenMais);
+			const allLoais = await LoaiThietBiModel.find();
+			return res.status(200).json(allLoais);
 		} catch (error) {
 			res.send({ message: error.message });
 		}
@@ -22,12 +21,12 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async themkhuyenmai(req, res) {
+	async themloaitb(req, res) {
 		try {
-			const newKhuyenMai = new KhuyenMaiModel(
+			const newLoaiTB = new LoaiThietBiModel(
 				req.body
 			);
-			const newRecord = await newKhuyenMai.save();
+			const newRecord = await newLoaiTB.save();
 			return res.status(200).json(newRecord);
 		} catch (error) {
 			res.send({ message: error.message });
@@ -39,10 +38,10 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async suakhuyenmai(req, res) {
+	async sualoaitb(req, res) {
 		try {
 			const id = req.params.id;
-			const result = await KhuyenMaiModel.updateOne(
+			const result = await LoaiThietBiModel.updateOne(
 				{ _id: id },
 				req.body
 			);
@@ -57,12 +56,14 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async xoakhuyenmai(req, res) {
+	async xoaloaitb(req, res) {
 		try {
 			const id = req.params.id;
-			const result = await KhuyenMaiModel.deleteOne({
-				_id: id,
-			});
+			const result = await LoaiThietBiModel.deleteOne(
+				{
+					_id: id,
+				}
+			);
 			return res.status(200).json(result);
 		} catch (error) {
 			res.send({ message: error.message });
@@ -74,17 +75,17 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async laymotkhuyenmai(req, res) {
+	async laymotloaithietbi(req, res) {
 		try {
 			const id = req.params.id;
-			const khuyemai = await KhuyenMaiModel.findById(
+			const loaitb = await LoaiThietBiModel.findById(
 				id
 			);
-			return res.status(200).json(khuyemai);
+			return res.status(200).json(loaitb);
 		} catch (error) {
 			res.send({ message: error.message });
 		}
 	}
 }
 
-module.exports = new KhuyenMaiController();
+module.exports = new LoaiThietBiController();

@@ -9,5 +9,5 @@ const LoaiThietBi = new mongoose.Schema({
 
 module.exports = {
 	schema: LoaiThietBi,
-	module: mongoose.model("LoaiThietBi", LoaiThietBi),
+	model: mongoose.model("LoaiThietBi", LoaiThietBi),
 };

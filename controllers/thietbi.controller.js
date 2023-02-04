@@ -1,17 +1,16 @@
-const KhuyenMaiModel =
-	require("~/models/khuyenmai.model").model;
-class KhuyenMaiController {
+const ThietBiModel =
+	require("~/models/thietbi.model").model;
+class LoaiThietBiController {
 	/**
 	 *
 	 * @param {import('express').Request} req
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async laytatcakhuyenmai(req, res) {
+	async laytatcatb(req, res) {
 		try {
-			const allKhuyenMais =
-				await KhuyenMaiModel.find();
-			return res.status(200).json(allKhuyenMais);
+			const allTBs = await ThietBiModel.find();
+			return res.status(200).json(allTBs);
 		} catch (error) {
 			res.send({ message: error.message });
 		}
@@ -22,12 +21,10 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async themkhuyenmai(req, res) {
+	async themtb(req, res) {
 		try {
-			const newKhuyenMai = new KhuyenMaiModel(
-				req.body
-			);
-			const newRecord = await newKhuyenMai.save();
+			const newTB = new ThietBiModel(req.body);
+			const newRecord = await newTB.save();
 			return res.status(200).json(newRecord);
 		} catch (error) {
 			res.send({ message: error.message });
@@ -39,10 +36,10 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async suakhuyenmai(req, res) {
+	async suatb(req, res) {
 		try {
 			const id = req.params.id;
-			const result = await KhuyenMaiModel.updateOne(
+			const result = await ThietBiModel.updateOne(
 				{ _id: id },
 				req.body
 			);
@@ -57,10 +54,10 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async xoakhuyenmai(req, res) {
+	async xoatb(req, res) {
 		try {
 			const id = req.params.id;
-			const result = await KhuyenMaiModel.deleteOne({
+			const result = await ThietBiModel.deleteOne({
 				_id: id,
 			});
 			return res.status(200).json(result);
@@ -74,17 +71,15 @@ class KhuyenMaiController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async laymotkhuyenmai(req, res) {
+	async laymotthietbi(req, res) {
 		try {
 			const id = req.params.id;
-			const khuyemai = await KhuyenMaiModel.findById(
-				id
-			);
-			return res.status(200).json(khuyemai);
+			const tb = await ThietBiModel.findById(id);
+			return res.status(200).json(tb);
 		} catch (error) {
 			res.send({ message: error.message });
 		}
 	}
 }
 
-module.exports = new KhuyenMaiController();
+module.exports = new LoaiThietBiController();

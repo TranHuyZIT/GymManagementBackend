@@ -51,4 +51,16 @@ router.use(
 	adminAuth,
 	require("~/routes/khuyenmai.route")
 );
+router.use(
+	"/loaithietbi",
+	userAuth,
+	adminAuth,
+	require("~/routes/loaithietbi.route")
+);
+router.use(
+	"/thietbi",
+	userAuth,
+	adminAuth,
+	require("~/routes/thietbi.route")
+);
 module.exports = router;
