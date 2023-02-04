@@ -1,7 +1,7 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
-
+const UserSchema = require("~/models/users.model").schema;
 const PT = new mongoose.Schema(
 	{
 		ten: {
@@ -13,6 +13,7 @@ const PT = new mongoose.Schema(
 			require: true,
 			validate: {
 				validator: function (input) {
+					console.log(new Date(input));
 					return (
 						typeof new Date(input) === "date" &&
 						new Date(input) >= new Date()
@@ -60,6 +61,7 @@ const PT = new mongoose.Schema(
 			message: () =>
 				"Cân nặng phải là số lớn hơn bằng 0",
 		},
+		user: { UserSchema },
 		isDeleted: {
 			type: Boolean,
 			default: false,

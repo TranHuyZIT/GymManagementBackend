@@ -2,7 +2,7 @@ const config = {
 	db: {
 		string:
 			process.env.DB_CONNECT_STRING ||
-			"mongodb://localhost:27017",
+			"mongodb://localhost:27017/test",
 	},
 	jwt: {
 		ACCESS_TOKEN_KEY:

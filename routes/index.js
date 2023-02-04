@@ -17,4 +17,32 @@ router.use(
 	require("~/routes/khach.route")
 );
 router.use("/pt", userAuth, require("~/routes/pt.route"));
+router.use(
+	"/pt",
+	userAuth,
+	require("~/routes/nvien.route")
+);
+router.use(
+	"/goitap",
+	userAuth,
+	adminAuth,
+	require("~/routes/nvien.route")
+);
+router.use(
+	"/goitap",
+	userAuth,
+	adminAuth,
+	require("~/routes/goitap.route")
+);
+router.use(
+	"/goipt",
+	userAuth,
+	adminAuth,
+	require("~/routes/goipt.route")
+);
+router.use(
+	"/hoadon",
+	userAuth,
+	require("~/routes/hoadon.route")
+);
 module.exports = router;

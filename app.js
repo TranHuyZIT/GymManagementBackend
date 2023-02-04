@@ -37,7 +37,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 MongooseService.connectDB();
-
 app.use("/", require("~/routes"));
 
 // catch 404 and forward to error handler

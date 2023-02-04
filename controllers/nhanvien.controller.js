@@ -1,15 +1,16 @@
 const PasswordUtil = require("~/utils/password.util");
-const mongoose = require("mongoose");
-const PTModel = require("~/models/pt.model").model;
+const NhanVienModel =
+	require("~/models/nhanvien.model").model;
 const UserModel = require("~/models/users.model").model;
-class PTController {
+const mongoose = require("mongoose");
+class NhanVienController {
 	/**
 	 *
 	 * @param {import('express').Request} req
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async dkypt(req, res) {
+	async dkynvien(req, res) {
 		const session = await mongoose.startSession();
 		try {
 			session.startTransaction();
@@ -34,7 +35,7 @@ class PTController {
 				],
 				{ session }
 			);
-			const newPT = await PTModel.create(
+			const newPT = await NhanVienModel.create(
 				[
 					{
 						...req.body.pt,
@@ -61,11 +62,11 @@ class PTController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async laymotpt(req, res) {
+	async laymotnvien(req, res) {
 		try {
 			const id = req.params.id;
-			const pt = await PTModel.findById(id);
-			return res.status(200).json(pt);
+			const nvien = await NhanVienModel.findById(id);
+			return res.status(200).json(nvien);
 		} catch (error) {
 			res.send({
 				msg: error.message,
@@ -78,10 +79,10 @@ class PTController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async laytatcapt(req, res) {
+	async laytatcanvien(req, res) {
 		try {
-			const allPTs = await PTModel.find();
-			return res.status(200).json(allPTs);
+			const allNViens = await NhanVienModel.find();
+			return res.status(200).json(allNViens);
 		} catch (error) {
 			res.send({
 				msg: error.message,
@@ -94,10 +95,10 @@ class PTController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async xoapt(req, res) {
+	async xoanvien(req, res) {
 		try {
 			const id = req.params.id;
-			const result = await PTModel.updateOne(
+			const result = await NhanVienModel.updateOne(
 				{
 					_id: id,
 				},
@@ -118,10 +119,10 @@ class PTController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
-	async capnhatpt(req, res) {
+	async capnhatnvien(req, res) {
 		try {
 			const id = req.params.id;
-			const result = await PTModel.updateOne(
+			const result = await NhanVienModel.updateOne(
 				{
 					_id: id,
 				},
@@ -136,4 +137,4 @@ class PTController {
 	}
 }
 
-module.exports = new PTController();
+module.exports = new NhanVienController();

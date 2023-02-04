@@ -4,7 +4,7 @@ class MongooseService {
 	static async connectDB() {
 		try {
 			mongoose.set("strictQuery", true);
-			await mongoose.connect(config.db.string, () => {
+			mongoose.connect(config.db.string, () => {
 				console.log("Connected to mongoDB");
 			});
 		} catch (error) {

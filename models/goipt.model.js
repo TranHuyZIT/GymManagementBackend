@@ -12,7 +12,7 @@ const GoiPT = new mongoose.Schema({
 		min: [0, "Số ngày một gói tập lớn hơn 0"],
 	},
 	gia: {
-		type: BigInt,
+		type: Number,
 		require: true,
 		min: [0, "Giá tiền gói tập phải lớn hơn 0"],
 	},
