@@ -32,7 +32,7 @@ const HoaDon = new mongoose.Schema(
 				pt: PTSchema,
 				tien: {
 					type: Number,
-					require: true,
+					require: true, 
 				},
 			},
 		],

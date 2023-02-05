@@ -34,11 +34,12 @@ class PTController {
 				],
 				{ session }
 			);
+			console.log(newUser[0]);
 			const newPT = await PTModel.create(
 				[
 					{
 						...req.body.pt,
-						user: newUser,
+						user: new UserModel(newUser[0]),
 					},
 				],
 				{

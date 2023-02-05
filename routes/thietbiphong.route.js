@@ -1,11 +1,11 @@
-const router = require("express").Router();
+const {
+	laytatcatbp,
+	laymottbp,
+	xoamottbp,
+} = require("~/controllers/thietbiphong.controller");
 
 const router = require("express").Router();
-router.route("/").get(laytatcatb).post(themtb);
-router
-	.route("/:id")
-	.get(laymotthietbi)
-	.put(suatb)
-	.delete(xoatb);
+router.route("/").get(laytatcatbp);
+router.route("/:id").get(laymottbp).delete(xoamottbp);
 
 module.exports = router;

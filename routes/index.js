@@ -63,4 +63,11 @@ router.use(
 	adminAuth,
 	require("~/routes/thietbi.route")
 );
+
+router.use(
+	"/thietbiphong",
+	userAuth,
+	adminAuth,
+	require("~/routes/thietbi.route")
+);
 module.exports = router;

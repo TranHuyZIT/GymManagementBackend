@@ -1,7 +1,9 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
-
+const DkyTapSchema =
+	require("~/models/dkytap.model").schema;
+const DkyPTSchema = require("~/models/dkypt.model").schema;
 const Khach = new mongoose.Schema(
 	{
 		ten: {
@@ -21,38 +23,8 @@ const Khach = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
-		dkytap: [
-			{
-				ngaydk: {
-					type: Date,
-					require: true,
-				},
-				ngayhethan: {
-					type: Date,
-					require: true,
-				},
-				magoitap: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "GoiTap",
-				},
-			},
-		],
-		dkypt: [
-			{
-				ngaydk: {
-					type: Date,
-					require: true,
-				},
-				ngayhethan: {
-					type: Date,
-					require: true,
-				},
-				magoipt: {
-					type: mongoose.Schema.Types.ObjectId,
-					ref: "GoiPT",
-				},
-			},
-		],
+		dkytap: [DkyTapSchema],
+		dkypt: [DkyPTSchema],
 		isDeleted: {
 			type: Boolean,
 			require: true,
