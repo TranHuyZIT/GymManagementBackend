@@ -4,7 +4,7 @@ const {
 	laymotkhuyenmai,
 	suakhuyenmai,
 	xoakhuyenmai,
-} = require("~/controllers/khuyenmai.route");
+} = require("~/controllers/khuyenmai.controller");
 
 const router = require("express").Router();
 
