@@ -2,7 +2,8 @@
 const mongoose = require("mongoose");
 const NhanVienSchema =
 	require("~/models/nhanvien.model").schema;
-const ThietBiPhongSchema = require("~/models/thietbiphong.model");
+const ThietBiPhongSchema =
+	require("~/models/thietbiphong.model").schema;
 const PhieuKiemTra = new mongoose.Schema({
 	ngaykiemtra: {
 		type: Date,

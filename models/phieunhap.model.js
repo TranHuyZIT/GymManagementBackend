@@ -21,7 +21,7 @@ const PhieuNhap = new mongoose.Schema({
 		},
 	},
 	tongtien: {
-		type: BigInt,
+		type: Number,
 		require: true,
 		default: 0,
 	},
@@ -35,7 +35,7 @@ const PhieuNhap = new mongoose.Schema({
 		{
 			thietbiphong: ThietBiSchema,
 			gianhap: {
-				type: BigInt,
+				type: Number,
 				require: true,
 				default: 0,
 			},

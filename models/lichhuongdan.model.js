@@ -1,7 +1,7 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
 const KhachSchema = require("~/models/khach.model").schema;
-const PTSchema = require("~/models/pt.model");
+const PTSchema = require("~/models/pt.model").schema;
 const LichHuongDan = new mongoose.Schema({
 	ngaybd: {
 		type: Date,

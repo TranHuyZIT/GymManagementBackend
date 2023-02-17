@@ -68,6 +68,24 @@ router.use(
 	"/thietbiphong",
 	userAuth,
 	adminAuth,
-	require("~/routes/thietbi.route")
+	require("~/routes/thietbiphong.route")
+);
+
+router.use(
+	"/lichhd",
+	userAuth,
+	require("~/routes/lichhd.route")
+);
+
+router.use(
+	"/phieuktra",
+	userAuth,
+	require("~/routes/phieuktra.route")
+);
+
+router.use(
+	"/phieunhap",
+	userAuth,
+	require("~/routes/phieunhap.route")
 );
 module.exports = router;

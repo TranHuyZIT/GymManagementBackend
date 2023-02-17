@@ -12,7 +12,7 @@ const ThietBiPhong = new mongoose.Schema({
 		require: true,
 	},
 	gianhap: {
-		type: BigInt,
+		type: Number,
 		require: true,
 		default: 0,
 	},
