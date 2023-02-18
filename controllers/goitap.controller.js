@@ -9,7 +9,7 @@ class GoiTapController {
 	async themgoitap(req, res) {
 		try {
 			const newGoiTap = new GoiTapModel(req.body);
-			const result = newGoiTap.save();
+			const result = await newGoiTap.save();
 			return res.status(200).json(result);
 		} catch (error) {
 			res.send({

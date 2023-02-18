@@ -23,7 +23,7 @@ router.use(
 	require("~/routes/nvien.route")
 );
 router.use(
-	"/goitap",
+	"/nhanvien",
 	userAuth,
 	adminAuth,
 	require("~/routes/nvien.route")
