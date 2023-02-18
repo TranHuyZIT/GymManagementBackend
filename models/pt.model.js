@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
-const UserSchema = require("~/models/users.model").schema;
 const PT = new mongoose.Schema(
 	{
 		ten: {
@@ -63,18 +62,15 @@ const PT = new mongoose.Schema(
 			message: () =>
 				"Cân nặng phải là số lớn hơn bằng 0",
 		},
-		user: UserSchema,
-		isDeleted: {
-			type: Boolean,
-			default: false,
+		user: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
 		},
 	},
 	{
 		timestamps: true,
 	}
 );
-
-MongooseService.setupSoftDelete(PT);
 
 module.exports = {
 	schema: PT,

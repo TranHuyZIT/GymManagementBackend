@@ -1,7 +1,6 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
-const UserSchema = require("~/models/users.model").schema;
 const NhanVien = new mongoose.Schema({
 	ten: {
 		type: String,
@@ -59,7 +58,10 @@ const NhanVien = new mongoose.Schema({
 			message: () => "Email không hợp lệ",
 		},
 	},
-	user: { UserSchema },
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+	},
 	isDeleted: {
 		type: Boolean,
 		default: false,

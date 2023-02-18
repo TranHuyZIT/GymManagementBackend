@@ -39,7 +39,7 @@ class PTController {
 				[
 					{
 						...req.body.pt,
-						user: new UserModel(newUser[0]),
+						user: new UserModel(newUser[0])._id,
 					},
 				],
 				{
@@ -65,7 +65,10 @@ class PTController {
 	async laymotpt(req, res) {
 		try {
 			const id = req.params.id;
-			const pt = await PTModel.findById(id);
+			const pt = await PTModel.findById(id).populate({
+				path: "user",
+				select: "tk laadmin",
+			});
 			return res.status(200).json(pt);
 		} catch (error) {
 			res.send({
@@ -96,22 +99,38 @@ class PTController {
 	 * @param {Function} next
 	 */
 	async xoapt(req, res) {
+		const session = await mongoose.startSession();
 		try {
+			session.startTransaction();
 			const id = req.params.id;
-			const result = await PTModel.updateOne(
+			const pt = await PTModel.findById(id);
+			if (!pt)
+				throw new Error(
+					"Không tìm thấy pt với mã " + id
+				);
+			await PTModel.deleteOne(
 				{
 					_id: id,
 				},
-				{
-					isDeleted: true,
-				}
+				{ session }
 			);
-			return res.status(200).json(result);
+			await UserModel.deleteOne(
+				{
+					_id: pt.user,
+				},
+				{ session }
+			);
+			await session.commitTransaction();
+			return res
+				.status(200)
+				.json({ msg: "Xóa Thành Công" });
 		} catch (error) {
+			await session.abortTransaction();
 			res.send({
 				msg: error.message,
 			});
 		}
+		await session.endSession();
 	}
 	/**
 	 *

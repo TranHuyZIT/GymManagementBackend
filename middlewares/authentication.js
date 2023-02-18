@@ -41,7 +41,7 @@ class AuthenticationMiddleWares {
 	adminAuth(req, res, next) {
 		try {
 			const currentUser = req.currentUser;
-			if (!currentUser.isadmin)
+			if (!currentUser.laadmin)
 				throw new Error("Truy cập bị từ chối");
 			next();
 		} catch (error) {

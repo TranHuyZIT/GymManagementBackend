@@ -58,10 +58,12 @@ class AuthController {
 			if (!isValidPassword)
 				throw new Error("Mật khẩu bị sai");
 			// Mật khẩu và tài khoản đúng
-			const accessToken = TokenUtil.sign(user);
+			const accessToken = TokenUtil.sign(
+				user.toJSON()
+			);
 			return res.status(200).json(accessToken);
 		} catch (error) {
-			res.send({
+			res.status(500).send({
 				msg: error.message,
 			});
 		}

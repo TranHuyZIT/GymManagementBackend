@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const GoiPTSchema = require("~/models/goipt.model").schema;
 const DkyPT = new mongoose.Schema(
 	{
 		makhach: {
@@ -17,10 +18,7 @@ const DkyPT = new mongoose.Schema(
 			type: Date,
 			require: true,
 		},
-		magoipt: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "GoiPT",
-		},
+		goipt: GoiPTSchema,
 	},
 	{
 		timestamps: true,

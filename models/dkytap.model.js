@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const GoiTapSChema =
+	require("~/models/goitap.model").schema;
 const DkyTap = new mongoose.Schema(
 	{
 		makhach: {
@@ -13,10 +15,7 @@ const DkyTap = new mongoose.Schema(
 			type: Date,
 			require: true,
 		},
-		magoitap: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "GoiTap",
-		},
+		goitap: GoiTapSChema,
 	},
 	{
 		timestamps: true,

@@ -1,12 +1,19 @@
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
-const GoiPTSchema = require("./goipt.model").schema;
-const GoiTapSchema = require("./goitap.model").schema;
-const KhachSchema = require("./khach.model").schema;
-const PTSchema = require("./pt.model").schema;
 const KhuyenMaiSchema = require("./khuyenmai.model").schema;
+const DkyTapSchema =
+	require("~/models/dkytap.model").schema;
+const DkyPTSchema = require("~/models/dkypt.model").schema;
 const HoaDon = new mongoose.Schema(
 	{
+		manv: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Khach",
+		},
+		makhach: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Khach",
+		},
 		ngaylap: {
 			type: Date,
 			require: true,
@@ -14,28 +21,10 @@ const HoaDon = new mongoose.Schema(
 		tongtien: {
 			type: Number,
 			require: true,
+			default: 0,
 		},
-		chitiettap: [
-			{
-				goitap: GoiTapSchema,
-				khach: KhachSchema,
-				tien: {
-					type: Number,
-					require: true,
-				},
-			},
-		],
-		chitietpt: [
-			{
-				goipt: GoiPTSchema,
-				khach: KhachSchema,
-				pt: PTSchema,
-				tien: {
-					type: Number,
-					require: true, 
-				},
-			},
-		],
+		dkytap: [DkyTapSchema],
+		dkypt: [DkyPTSchema],
 		khuyenmai: KhuyenMaiSchema,
 		isDeleted: {
 			type: Boolean,
