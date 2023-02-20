@@ -1,5 +1,7 @@
 const ThietBiModel =
 	require("~/models/thietbi.model").model;
+const LoaiThietBiModel =
+	require("~/models/loaithietbi.model").model;
 class LoaiThietBiController {
 	/**
 	 *
@@ -23,7 +25,19 @@ class LoaiThietBiController {
 	 */
 	async themtb(req, res) {
 		try {
-			const newTB = new ThietBiModel(req.body);
+			const { maloaitb, ...rest } = req.body;
+			const loaitb = await LoaiThietBiModel.findById(
+				maloaitb
+			);
+			if (!loaitb)
+				throw new Error(
+					"Không tìm thấy loại thiết bị với mã: " +
+						maloaitb
+				);
+			const newTB = new ThietBiModel({
+				...rest,
+				loaitb,
+			});
 			const newRecord = await newTB.save();
 			return res.status(200).json(newRecord);
 		} catch (error) {

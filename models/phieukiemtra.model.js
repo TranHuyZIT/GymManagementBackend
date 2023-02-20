@@ -19,6 +19,10 @@ const PhieuKiemTra = new mongoose.Schema({
 				`${input} phải sớm hơn ngày hiện tại`,
 		},
 	},
+	ghichu: {
+		type: String,
+		require: false,
+	},
 	nhanvien: NhanVienSchema,
 	chitiet: [
 		{

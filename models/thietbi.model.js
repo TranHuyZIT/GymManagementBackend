@@ -1,13 +1,16 @@
 const mongoose = require("mongoose");
 const LoaiThietBiSchema =
 	require("~/models/loaithietbi.model").schema;
-const ThietBi = new mongoose.Schema({
-	ten: {
-		type: String,
-		require: true,
+const ThietBi = new mongoose.Schema(
+	{
+		ten: {
+			type: String,
+			require: true,
+		},
+		loaitb: LoaiThietBiSchema,
 	},
-	loaitb: LoaiThietBiSchema,
-});
+	{ timestamps: true }
+);
 
 module.exports = {
 	schema: ThietBi,
