@@ -11,8 +11,10 @@ const PhieuKiemTra = new mongoose.Schema({
 		validate: {
 			validator: function (input) {
 				return (
-					typeof new Date(input) === "date" &&
-					new Date(input) >= new Date()
+					Object.prototype.toString.call(
+						input
+					) === "[object Date]" &&
+					new Date(input) < new Date()
 				);
 			},
 			message: (input) =>
@@ -26,7 +28,7 @@ const PhieuKiemTra = new mongoose.Schema({
 	nhanvien: NhanVienSchema,
 	chitiet: [
 		{
-			thietbi: ThietBiPhongSchema,
+			thietbiphong: ThietBiPhongSchema,
 			tinhtrang: {
 				type: String,
 				require: true,

@@ -38,8 +38,8 @@ class NhanVienController {
 			const newPT = await NhanVienModel.create(
 				[
 					{
-						...req.body.pt,
-						user: newUser,
+						...req.body.nv,
+						user: new UserModel(newUser[0])._id,
 					},
 				],
 				{
@@ -47,7 +47,7 @@ class NhanVienController {
 				}
 			);
 			await session.commitTransaction();
-			return res.status(200).json(newPT);
+			return res.status(200).json(newPT[0]);
 		} catch (error) {
 			await session.abortTransaction();
 			res.send({

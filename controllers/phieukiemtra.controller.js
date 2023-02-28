@@ -1,5 +1,10 @@
+const { default: mongoose } = require("mongoose");
+const NhanVienModel =
+	require("~/models/nhanvien.model").model;
 const PhieuKiemTraModel =
 	require("~/models/phieukiemtra.model").model;
+const ThietBiPhongModel =
+	require("~/models/thietbiphong.model").model;
 class PhieuKiemTraController {
 	/**
 	 *
@@ -22,13 +27,45 @@ class PhieuKiemTraController {
 	 * @param {Function} next
 	 */
 	async lapphieuktra(req, res) {
+		const session = await mongoose.startSession();
 		try {
-			const newKhuyenMai = new PhieuKiemTraModel(
-				req.body
+			session.startTransaction();
+			const { manv, chitiets, ...rest } = req.body;
+			const nhanvien = await NhanVienModel.findById(
+				manv
 			);
-			const newRecord = await newKhuyenMai.save();
+			console.log(rest);
+			if (!nhanvien)
+				throw new Error(
+					"Không tìm thấy nhân viên với mã" + manv
+				);
+			const updatedThietBiPhongs = [];
+			for (const chitiet of chitiets) {
+				const { mathietbiphong, ...extraInfo } =
+					chitiet;
+				const updated =
+					await ThietBiPhongModel.findByIdAndUpdate(
+						mathietbiphong,
+						{ ...extraInfo },
+						{ session, new: true }
+					);
+				updatedThietBiPhongs.push({
+					thietbiphong: updated,
+					tinhtrang: updated.tinhtrang,
+				});
+			}
+			const newPhieuKtra = new PhieuKiemTraModel({
+				...rest,
+				nhanvien,
+				chitiet: updatedThietBiPhongs,
+			});
+			const newRecord = await newPhieuKtra.save({
+				session,
+			});
+			await session.commitTransaction();
 			return res.status(200).json(newRecord);
 		} catch (error) {
+			await session.abortTransaction();
 			res.send({ message: error.message });
 		}
 	}

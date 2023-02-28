@@ -1,5 +1,12 @@
 const PhieuNhapModel =
 	require("~/models/phieunhap.model").model;
+const NhanVienModel =
+	require("~/models/nhanvien.model").model;
+const ThietBiModel =
+	require("~/models/thietbi.model").model;
+const ThietBiPhongModel =
+	require("~/models/thietbiphong.model").model;
+const mongoose = require("mongoose");
 class PhieuNhapController {
 	/**
 	 *
@@ -23,13 +30,74 @@ class PhieuNhapController {
 	 * @param {Function} next
 	 */
 	async lapphieunhap(req, res) {
+		const session = await mongoose.startSession();
 		try {
-			const newPhieuNhap = new PhieuNhapModel(
-				req.body
+			session.startTransaction();
+			const { manv, chitiet, ...phieunhapInfo } =
+				req.body;
+
+			const nhanvien = await NhanVienModel.findById(
+				manv
 			);
-			const newRecord = await newPhieuNhap.save();
-			return res.status(200).json(newRecord);
+			if (!nhanvien)
+				throw new Error(
+					"Không tồn tại nhân viên với mã " + manv
+				);
+			const newPhieuNhap = new PhieuNhapModel({
+				...phieunhapInfo,
+			});
+			const newRecord = await newPhieuNhap.save({
+				session,
+			});
+			const createdChiTiets = [];
+			let tongtien = 0;
+			let tongsl = 0;
+			for (const ctpn of chitiet) {
+				const { matb, ...chitietInfo } = ctpn;
+				const thietbi = await ThietBiModel.findById(
+					matb
+				).session(session);
+				if (!thietbi)
+					throw new Error(
+						"Không tồn tại thiết bị với mã" +
+							matb
+					);
+				const tbphong = new ThietBiPhongModel({
+					...chitietInfo,
+					ten: chitietInfo.ten || thietbi.ten,
+					phieunhap: newPhieuNhap,
+					thietbi,
+					tinhtrang:
+						chitietInfo.tinhtrang || "Tốt",
+				});
+				const newThietBiPhong = await tbphong.save({
+					session,
+				});
+				tongtien += newThietBiPhong.gianhap;
+				tongsl++;
+				createdChiTiets.push({
+					thietbiphong: newThietBiPhong,
+					gianhap: newThietBiPhong.gianhap,
+				});
+			}
+			const phieunhap =
+				await PhieuNhapModel.findOneAndUpdate(
+					{ _id: newRecord._id },
+					{
+						nhanvien,
+						tongtien,
+						tongsl,
+						chitiet: createdChiTiets,
+					},
+					{
+						session,
+						new: true,
+					}
+				);
+			await session.commitTransaction();
+			return res.status(200).json(phieunhap);
 		} catch (error) {
+			await session.abortTransaction();
 			res.send({ message: error.message });
 		}
 	}

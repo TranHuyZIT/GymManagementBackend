@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
 const NhanVienSchema =
 	require("~/models/nhanvien.model").schema;
-const ThietBiSchema =
-	require("~/models/thietbi.model").schema;
+const ThietBiPhongSchema =
+	require("~/models/thietbiphong.model").schema;
 const PhieuNhap = new mongoose.Schema({
 	ngaynhap: {
 		type: Date,
@@ -12,8 +12,10 @@ const PhieuNhap = new mongoose.Schema({
 		validate: {
 			validator: function (input) {
 				return (
-					typeof new Date(input) === "date" &&
-					new Date(input) >= new Date()
+					Object.prototype.toString.call(
+						input
+					) === "[object Date]" &&
+					new Date(input) < new Date()
 				);
 			},
 			message: (input) =>
@@ -33,7 +35,7 @@ const PhieuNhap = new mongoose.Schema({
 	nhanvien: NhanVienSchema,
 	chitiet: [
 		{
-			thietbiphong: ThietBiSchema,
+			thietbiphong: ThietBiPhongSchema,
 			gianhap: {
 				type: Number,
 				require: true,
@@ -49,7 +51,7 @@ const PhieuNhap = new mongoose.Schema({
 
 MongooseService.setupSoftDelete(PhieuNhap);
 
-module.export = {
+module.exports = {
 	schema: PhieuNhap,
 	model: mongoose.model("PhieuNhap", PhieuNhap),
 };

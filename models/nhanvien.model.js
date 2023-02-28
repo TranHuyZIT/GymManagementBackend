@@ -1,6 +1,7 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
+
 const NhanVien = new mongoose.Schema({
 	ten: {
 		type: String,
@@ -12,8 +13,10 @@ const NhanVien = new mongoose.Schema({
 		validate: {
 			validator: function (input) {
 				return (
-					typeof new Date(input) === "date" &&
-					new Date(input) >= new Date()
+					Object.prototype.toString.call(
+						input
+					) === "[object Date]" &&
+					new Date(input) < new Date()
 				);
 			},
 			message: (input) =>

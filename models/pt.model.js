@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const MongooseService = require("~/services/mongoose.service");
 const PT = new mongoose.Schema(
 	{
 		ten: {
@@ -11,8 +10,6 @@ const PT = new mongoose.Schema(
 			require: true,
 			validate: {
 				validator: function (input) {
-					console.log(new Date(input));
-					console.log(typeof new Date(input));
 					return (
 						Object.prototype.toString.call(
 							input
