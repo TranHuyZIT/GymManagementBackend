@@ -8,7 +8,11 @@ class KhachController {
 	 */
 	async dky(req, res) {
 		try {
-			const newKhach = new KhachModel(req.body);
+			const newKhach = new KhachModel({
+				...req.body,
+				dkytap: [],
+				dkypt: [],
+			});
 			const khachRecord = await newKhach.save();
 			return res.status(200).json(khachRecord);
 		} catch (error) {

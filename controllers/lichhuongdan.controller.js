@@ -1,5 +1,13 @@
+const {
+	default: mongoose,
+	startSession,
+} = require("mongoose");
+
 const LichHuongDanModel =
 	require("~/models/lichhuongdan.model").model;
+
+const PTModel = require("~/models/pt.model").model;
+const KhachModel = require("~/models/khach.model").model;
 class LichHuongDanController {
 	/**
 	 *
@@ -9,7 +17,10 @@ class LichHuongDanController {
 	 */
 	async laytatcalichhd(req, res) {
 		try {
-			const allLichs = await LichHuongDanModel.find();
+			const { mapt } = req.query;
+			const allLichs = await LichHuongDanModel.find({
+				"pt._id": mapt,
+			});
 			return res.status(200).json(allLichs);
 		} catch (error) {
 			res.send({ message: error.message });
@@ -22,14 +33,63 @@ class LichHuongDanController {
 	 * @param {Function} next
 	 */
 	async themlichhd(req, res) {
+		const session = await mongoose.startSession();
 		try {
-			const newKhuyenMai = new LichHuongDanModel(
-				req.body
-			);
-			const newRecord = await newKhuyenMai.save();
-			return res.status(200).json(newRecord);
+			session.startTransaction();
+			let { mapt, chitiet, ...lichhdInfo } = req.body;
+			const pt = await PTModel.findById(mapt);
+			if (!pt)
+				throw new Error(
+					"Không tìm thấy pt có mã là" + mapt
+				);
+			// Initialize timetable map
+			const chitietCopy = [];
+			const timetable = new Map();
+			for (let i = 2; i <= 8; i++) {
+				timetable.set(i, []);
+			}
+			while (chitiet.length > 0) {
+				const buoiTap = chitiet.pop();
+				const khach = await KhachModel.findById(
+					buoiTap.makhach
+				).session(session);
+				if (!khach)
+					throw new Error(
+						"Không tồn tại khách hàng có mã" +
+							buoiTap.makhach
+					);
+				chitietCopy.push({
+					thu: buoiTap.thu,
+					giobd: buoiTap.giobd,
+					khach,
+				});
+				timetable.set(buoiTap.thu, [
+					...timetable.get(buoiTap.thu),
+					{
+						thu: buoiTap.thu,
+						giobd: buoiTap.giobd,
+						khach,
+					},
+				]);
+			}
+			const newTKB = new LichHuongDanModel({
+				...lichhdInfo,
+				pt,
+				chitiet: chitietCopy,
+			});
+			const newRecord = await newTKB.save({
+				session,
+			});
+			await session.commitTransaction();
+			return res.status(200).json({
+				...newRecord.toJSON(),
+				chitiet: Object.fromEntries(timetable),
+			});
 		} catch (error) {
-			res.send({ message: error.message });
+			await session.abortTransaction();
+			return res
+				.status(400)
+				.json({ message: error.message });
 		}
 	}
 	/**
@@ -81,7 +141,24 @@ class LichHuongDanController {
 			const lichhd = await LichHuongDanModel.findById(
 				id
 			);
-			return res.status(200).json(lichhd);
+			const chitiet = lichhd.chitiet;
+			const timetable = new Map();
+			for (let i = 2; i <= 8; i++) {
+				timetable.set(i, []);
+			}
+			while (chitiet.length > 0) {
+				const buoiTap = chitiet.pop();
+				timetable.set(buoiTap.thu, [
+					...timetable.get(buoiTap.thu),
+					{
+						...buoiTap.toJSON(),
+					},
+				]);
+			}
+			return res.status(200).json({
+				...lichhd.toJSON(),
+				chitiet: Object.fromEntries(timetable),
+			});
 		} catch (error) {
 			res.send({ message: error.message });
 		}

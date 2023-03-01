@@ -171,8 +171,6 @@ class HoaDonController {
 	 */
 	async luuhoadon(req, res) {
 		try {
-			const chitiet = req.body.chitiet;
-
 			return res.status(200).json();
 		} catch (error) {
 			res.send({

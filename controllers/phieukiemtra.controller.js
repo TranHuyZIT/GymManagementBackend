@@ -30,7 +30,7 @@ class PhieuKiemTraController {
 		const session = await mongoose.startSession();
 		try {
 			session.startTransaction();
-			const { manv, chitiets, ...rest } = req.body;
+			const { manv, chitiet, ...rest } = req.body;
 			const nhanvien = await NhanVienModel.findById(
 				manv
 			);
@@ -40,9 +40,8 @@ class PhieuKiemTraController {
 					"Không tìm thấy nhân viên với mã" + manv
 				);
 			const updatedThietBiPhongs = [];
-			for (const chitiet of chitiets) {
-				const { mathietbiphong, ...extraInfo } =
-					chitiet;
+			for (const ct of chitiet) {
+				const { mathietbiphong, ...extraInfo } = ct;
 				const updated =
 					await ThietBiPhongModel.findByIdAndUpdate(
 						mathietbiphong,
