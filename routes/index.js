@@ -88,4 +88,9 @@ router.use(
 	userAuth,
 	require("~/routes/phieunhap.route")
 );
+router.use(
+	"/entrance",
+	userAuth,
+	require("~/routes/entrancelog.route")
+);
 module.exports = router;

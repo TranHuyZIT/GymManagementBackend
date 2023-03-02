@@ -45,7 +45,6 @@
 // 		try {
 // 			const ngaybd = req.query.ngaybd;
 // 			const ngaykt = req.query.ngaykt;
-
 // 		} catch (error) {
 // 			res.status(400).send({
 // 				message: error.message,

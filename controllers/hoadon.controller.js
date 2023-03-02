@@ -56,6 +56,7 @@ class HoaDonController {
 					session,
 				});
 				dkyTapRecords.push(newDkyRecord);
+				khach.dkytap.push(newDkyRecord);
 			}
 			const dkyPTRecords = [];
 			for (const dky of dkypt) {
@@ -77,6 +78,7 @@ class HoaDonController {
 				});
 				tongtien += goipt.gia;
 				dkyPTRecords.push(newDkyRecord);
+				khach.dkypt.push(newDkyRecord);
 			}
 			let khuyenmaiRecord = null;
 			if (khuyenmai) {
@@ -101,6 +103,7 @@ class HoaDonController {
 				}
 			);
 			await newHoaDon.save({ session });
+			await khach.save({ session });
 
 			await session.commitTransaction();
 			return res.status(200).json(newHoaDon);
