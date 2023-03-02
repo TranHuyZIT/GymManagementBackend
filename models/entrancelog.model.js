@@ -2,7 +2,14 @@ const mongoose = require("mongoose");
 const KhachSchema = require("~/models/khach.model").schema;
 const EntranceLog = new mongoose.Schema(
 	{
-		khach: KhachSchema,
+		tenKhach: {
+			type: String,
+			require: true,
+		},
+		makhach: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Khach",
+		},
 	},
 	{
 		timestamps: true,

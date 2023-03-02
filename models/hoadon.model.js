@@ -8,7 +8,7 @@ const HoaDon = new mongoose.Schema(
 	{
 		manv: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Khach",
+			ref: "NhanVien",
 		},
 		makhach: {
 			type: mongoose.Schema.Types.ObjectId,
