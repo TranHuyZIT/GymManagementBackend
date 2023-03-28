@@ -9,8 +9,21 @@ class LoaiThietBiController {
 	 */
 	async laytatcaloaitb(req, res) {
 		try {
-			const allLoais = await LoaiThietBiModel.find();
-			return res.status(200).json(allLoais);
+			const pageSize = req.query.pageNo || 15;
+			const offset = req.query.offset || 0;
+			const allLoais = await LoaiThietBiModel.find(
+				{},
+				"",
+				{
+					skip: offset,
+					limit: pageSize,
+				}
+			);
+			const total = await LoaiThietBiModel.count({});
+			return res.status(200).json({
+				data: allLoais,
+				totalRows: total,
+			});
 		} catch (error) {
 			res.send({ message: error.message });
 		}

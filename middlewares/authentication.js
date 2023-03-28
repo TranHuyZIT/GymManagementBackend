@@ -23,6 +23,7 @@ class AuthenticationMiddleWares {
 				);
 			const decodedUser =
 				TokenUtil.decode(accessToken);
+
 			if (!decodedUser)
 				throw new Error(
 					"Access token không hợp lệ"
@@ -34,7 +35,7 @@ class AuthenticationMiddleWares {
 			next();
 		} catch (error) {
 			res.status(401).send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -46,7 +47,7 @@ class AuthenticationMiddleWares {
 			next();
 		} catch (error) {
 			return res.status(401).send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}

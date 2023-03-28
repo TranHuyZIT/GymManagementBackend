@@ -1,5 +1,6 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
+const autoIncrement = require("mongoose-auto-increment");
 const NhanVienSchema =
 	require("~/models/nhanvien.model").schema;
 const ThietBiPhongSchema =
@@ -36,7 +37,12 @@ const PhieuKiemTra = new mongoose.Schema({
 		},
 	],
 });
-
+autoIncrement.initialize(mongoose.connection);
+PhieuKiemTra.plugin(autoIncrement.plugin, {
+	model: "PhieuNhap",
+	field: "id",
+	startAt: 1000,
+});
 module.exports = {
 	schema: PhieuKiemTra,
 	model: mongoose.model("PhieuKiemTra", PhieuKiemTra),

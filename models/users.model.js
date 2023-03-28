@@ -17,6 +17,10 @@ const User = new mongoose.Schema(
 			type: String,
 			require: true,
 		},
+		lapt: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{ timestamps: true }
 );

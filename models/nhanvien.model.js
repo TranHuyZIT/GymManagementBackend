@@ -1,7 +1,7 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
-
+const autoIncrement = require("mongoose-auto-increment");
 const NhanVien = new mongoose.Schema({
 	ten: {
 		type: String,
@@ -72,6 +72,12 @@ const NhanVien = new mongoose.Schema({
 });
 
 MongooseService.setupSoftDelete(NhanVien);
+autoIncrement.initialize(mongoose.connection);
+NhanVien.plugin(autoIncrement.plugin, {
+	model: "NhanVien",
+	field: "id",
+	startAt: 1000,
+});
 
 module.exports = {
 	schema: NhanVien,

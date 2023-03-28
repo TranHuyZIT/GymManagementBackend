@@ -7,9 +7,19 @@ class ThietBiPhong {
 	 */
 	async laytatcatbp(req, res) {
 		try {
+			const offset = req.query.offset;
+			const pageSize = req.query.pageSize;
 			const allThietBiPhong =
-				await ThietBiPhongModel.find();
-			return res.status(200).json(allThietBiPhong);
+				await ThietBiPhongModel.find({}, "", {
+					skip: offset,
+					limit: pageSize,
+				});
+			const total = await ThietBiPhongModel.count({});
+			console.log(allThietBiPhong);
+			return res.status(200).json({
+				data: allThietBiPhong,
+				totalRows: total,
+			});
 		} catch (error) {
 			res.send({ msg: error.message });
 		}

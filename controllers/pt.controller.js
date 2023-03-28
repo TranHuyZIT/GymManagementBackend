@@ -84,8 +84,25 @@ class PTController {
 	 */
 	async laytatcapt(req, res) {
 		try {
-			const allPTs = await PTModel.find();
-			return res.status(200).json(allPTs);
+			const skip = req.query.offset || 0;
+			const limit = req.query.pageSize;
+			const name = req.query.name || null;
+			const filter = {};
+			if (name) {
+				filter["ten"] = {
+					$regex: name,
+					$options: "i",
+				};
+			}
+			const allPTs = await PTModel.find(filter, "", {
+				skip,
+				limit,
+			});
+			const totalRows = await PTModel.count(filter);
+			return res.status(200).json({
+				data: allPTs.at,
+				totalRows,
+			});
 		} catch (error) {
 			res.send({
 				msg: error.message,

@@ -2,6 +2,9 @@ const PasswordUtil = require("~/utils/password.util");
 const TokenUtil = require("~/utils/token.util");
 
 const UserModel = require("~/models/users.model").model;
+const NhanVienModel =
+	require("~/models/nhanvien.model").model;
+const PTModel = require("~/models/pt.model").model;
 class AuthController {
 	/**
 	 *
@@ -51,10 +54,8 @@ class AuthController {
 				throw new Error(
 					`Không tồn tại tài khoản ${tk}`
 				);
-			const isValidPassword = PasswordUtil.compare(
-				mk,
-				user.mk
-			);
+			const isValidPassword =
+				await PasswordUtil.compare(mk, user.mk);
 			if (!isValidPassword)
 				throw new Error("Mật khẩu bị sai");
 			// Mật khẩu và tài khoản đúng
@@ -76,8 +77,38 @@ class AuthController {
 	 */
 	async xacthuc(req, res) {
 		try {
-			const currentUser = req.currentUser;
-			return res.status(200).json(currentUser);
+			const authorization = req.headers.authorization;
+			const currentUser = TokenUtil.decode(
+				authorization.replace("Bearer ", "")
+			);
+			// eslint-disable-next-line no-unused-vars
+			const { mk, ...rest } = currentUser;
+			if (rest.ispt) {
+				const pt = await PTModel.findOne({
+					user: currentUser._id,
+				});
+				if (!pt)
+					throw new Error(
+						"Không tìm thấy thông tin PT theo tài khoản " +
+							currentUser.tk
+					);
+				return res.status(200).json({
+					...rest,
+					info: pt,
+				});
+			}
+			const nhanvien = await NhanVienModel.findOne({
+				user: currentUser._id,
+			});
+			if (!nhanvien)
+				throw new Error(
+					"Không tìm thấy thông tin nhân viên theo tài khoản " +
+						currentUser.tk
+				);
+			return res.status(200).json({
+				...rest,
+				info: nhanvien,
+			});
 		} catch (error) {
 			res.send({
 				msg: error.message,

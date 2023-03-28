@@ -1,6 +1,7 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
 const MongooseService = require("~/services/mongoose.service");
+const autoIncrement = require("mongoose-auto-increment");
 const NhanVienSchema =
 	require("~/models/nhanvien.model").schema;
 const ThietBiPhongSchema =
@@ -50,7 +51,12 @@ const PhieuNhap = new mongoose.Schema({
 });
 
 MongooseService.setupSoftDelete(PhieuNhap);
-
+autoIncrement.initialize(mongoose.connection);
+PhieuNhap.plugin(autoIncrement.plugin, {
+	model: "PhieuNhap",
+	field: "id",
+	startAt: 1000,
+});
 module.exports = {
 	schema: PhieuNhap,
 	model: mongoose.model("PhieuNhap", PhieuNhap),

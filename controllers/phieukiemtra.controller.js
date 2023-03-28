@@ -14,8 +14,22 @@ class PhieuKiemTraController {
 	 */
 	async laytatcaphieuktra(req, res) {
 		try {
-			const allLichs = await PhieuKiemTraModel.find();
-			return res.status(200).json(allLichs);
+			const offset = req.query.offset || 0;
+			const pageSize = req.query.pageSize || null;
+			const allPhieus = await PhieuKiemTraModel.find(
+				{},
+				"",
+				{
+					skip: offset,
+					limit: pageSize,
+				}
+			);
+			return res.status(200).json({
+				data: allPhieus,
+				totalRows: await PhieuKiemTraModel.count(
+					{}
+				),
+			});
 		} catch (error) {
 			res.send({ message: error.message });
 		}
@@ -28,13 +42,13 @@ class PhieuKiemTraController {
 	 */
 	async lapphieuktra(req, res) {
 		const session = await mongoose.startSession();
+		console.log(req.body);
 		try {
 			session.startTransaction();
 			const { manv, chitiet, ...rest } = req.body;
 			const nhanvien = await NhanVienModel.findById(
 				manv
 			);
-			console.log(rest);
 			if (!nhanvien)
 				throw new Error(
 					"Không tìm thấy nhân viên với mã" + manv

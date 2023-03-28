@@ -11,8 +11,18 @@ class LoaiThietBiController {
 	 */
 	async laytatcatb(req, res) {
 		try {
-			const allTBs = await ThietBiModel.find();
-			return res.status(200).json(allTBs);
+			const pageSize = req.query.pageNo || 15;
+			const offset = req.query.offset || 0;
+			const allTBs = await ThietBiModel.find({}, "", {
+				skip: offset,
+				limit: pageSize,
+			});
+
+			const totalRows = await ThietBiModel.count({});
+			return res.status(200).json({
+				data: allTBs,
+				totalRows,
+			});
 		} catch (error) {
 			res.send({ message: error.message });
 		}
@@ -41,7 +51,9 @@ class LoaiThietBiController {
 			const newRecord = await newTB.save();
 			return res.status(200).json(newRecord);
 		} catch (error) {
-			res.send({ message: error.message });
+			res.status(400).json({
+				message: error.message,
+			});
 		}
 	}
 	/**
@@ -53,13 +65,16 @@ class LoaiThietBiController {
 	async suatb(req, res) {
 		try {
 			const id = req.params.id;
+			console.log(req.body);
 			const result = await ThietBiModel.updateOne(
 				{ _id: id },
 				req.body
 			);
 			return res.status(200).json(result);
 		} catch (error) {
-			res.send({ message: error.message });
+			res.status(400).json({
+				message: error.message,
+			});
 		}
 	}
 	/**

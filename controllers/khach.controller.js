@@ -17,7 +17,7 @@ class KhachController {
 			return res.status(200).json(khachRecord);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -46,8 +46,32 @@ class KhachController {
 	 */
 	async laytatca(req, res) {
 		try {
-			const allKhachs = await KhachModel.find();
-			return res.status(200).json(allKhachs);
+			const offset = req.query.offset || 0;
+			const pageSize = req.query.pageSize || null;
+			const name = req.query.name || null;
+			const filter = {};
+			if (name) {
+				filter["ten"] = {
+					$regex: name,
+					$options: "i",
+				};
+			}
+			const allKhachs = await KhachModel.find(
+				filter,
+				"",
+				{
+					skip: offset,
+					limit: pageSize,
+				}
+			);
+			console.log(allKhachs);
+			const totalRows = await KhachModel.count(
+				filter
+			);
+			return res.status(200).json({
+				totalRows,
+				data: allKhachs,
+			});
 		} catch (error) {
 			res.send({
 				msg: error.message,

@@ -13,7 +13,7 @@ class GoiTapController {
 			return res.status(200).json(result);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -24,12 +24,25 @@ class GoiTapController {
 	 * @param {Function} next
 	 */
 	async laytatcagoitap(req, res) {
+		const offset = req.query.offset || 0;
+		const pageSize = req.query.pageSize || null;
 		try {
-			const allGoiTaps = await GoiTapModel.find();
-			return res.status(200).json(allGoiTaps);
+			const allGoiTaps = await GoiTapModel.find(
+				{},
+				"",
+				{
+					skip: offset,
+					limit: pageSize,
+				}
+			);
+			const totalRows = await GoiTapModel.count({});
+			return res.status(200).json({
+				totalRows,
+				data: allGoiTaps,
+			});
 		} catch (error) {
-			res.send({
-				msg: error.message,
+			res.status(500).send({
+				message: error.message,
 			});
 		}
 	}
@@ -46,7 +59,7 @@ class GoiTapController {
 			return res.status(200).json(goitap);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -66,7 +79,7 @@ class GoiTapController {
 			return res.status(200).json(result);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -79,13 +92,13 @@ class GoiTapController {
 	async xoagoitap(req, res) {
 		try {
 			const id = req.params.id;
-			const result = GoiTapModel.deleteOne({
+			const result = await GoiTapModel.deleteOne({
 				_id: id,
 			});
 			return res.status(200).json(result);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}

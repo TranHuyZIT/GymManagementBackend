@@ -7,7 +7,7 @@ const { queryParser } = require("express-query-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const MongooseService = require("~/services/mongoose.service");
-
+MongooseService.connectDB();
 const app = express();
 
 // view engine setup
@@ -23,9 +23,7 @@ app.use(bodyParser.json());
 
 app.use(
 	cors({
-		origin:
-			process.env.FRONT_END_ORIGIN ||
-			"http://localhost:3000/",
+		origin: process.env.FRONT_END_ORIGIN || "*",
 		optionsSuccessStatus: 200,
 	})
 );
@@ -36,7 +34,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-MongooseService.connectDB();
 app.use("/", require("~/routes"));
 
 // catch 404 and forward to error handler

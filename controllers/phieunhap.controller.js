@@ -16,9 +16,21 @@ class PhieuNhapController {
 	 */
 	async laytatcaphieunhap(req, res) {
 		try {
-			const allPhieuNhaps =
-				await PhieuNhapModel.find();
-			return res.status(200).json(allPhieuNhaps);
+			const offset = req.query.offset;
+			const pageSize = req.query.pageSize;
+			const allPhieuNhaps = await PhieuNhapModel.find(
+				{},
+				"",
+				{
+					skip: offset,
+					limit: pageSize,
+				}
+			);
+			const total = await PhieuNhapModel.count({});
+			return res.status(200).json({
+				data: allPhieuNhaps,
+				total,
+			});
 		} catch (error) {
 			res.send({ message: error.message });
 		}
@@ -36,9 +48,9 @@ class PhieuNhapController {
 			const { manv, chitiet, ...phieunhapInfo } =
 				req.body;
 
-			const nhanvien = await NhanVienModel.findById(
-				manv
-			);
+			const nhanvien = await NhanVienModel.findOne({
+				id: manv,
+			});
 			if (!nhanvien)
 				throw new Error(
 					"Không tồn tại nhân viên với mã " + manv
@@ -98,7 +110,9 @@ class PhieuNhapController {
 			return res.status(200).json(phieunhap);
 		} catch (error) {
 			await session.abortTransaction();
-			res.send({ message: error.message });
+			res.status(500).send({
+				message: error.message,
+			});
 		}
 	}
 	/**

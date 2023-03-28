@@ -25,8 +25,17 @@ class GoiPTController {
 	 */
 	async laytatcagoipt(req, res) {
 		try {
-			const allGoiPT = await GoiPtModel.find();
-			return res.status(200).json(allGoiPT);
+			const offset = req.query.offset || 0;
+			const pageSize = req.query.pageSize || null;
+			const allGoiPT = await GoiPtModel.find({}, "", {
+				skip: offset,
+				limit: pageSize,
+			});
+			const totalRows = await GoiPtModel.count({});
+			return res.status(200).json({
+				totalRows,
+				data: allGoiPT,
+			});
 		} catch (error) {
 			res.send({
 				msg: error.message,
