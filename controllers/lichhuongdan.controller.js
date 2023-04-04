@@ -18,10 +18,27 @@ class LichHuongDanController {
 	async laytatcalichhd(req, res) {
 		try {
 			const { mapt } = req.query;
-			const allLichs = await LichHuongDanModel.find({
-				"pt._id": mapt,
+			const offset = req.query.offset || 0;
+			const pageSize = req.query.pageSize || null;
+			const allLichs = await LichHuongDanModel.find(
+				{
+					"pt._id": mapt,
+				},
+				"",
+				{
+					skip: offset,
+					limit: pageSize,
+				}
+			).select("-chitiet");
+			const totalRows = await LichHuongDanModel.count(
+				{
+					"pt._id": mapt,
+				}
+			);
+			return res.status(200).json({
+				data: allLichs,
+				totalRows,
 			});
-			return res.status(200).json(allLichs);
 		} catch (error) {
 			res.send({ message: error.message });
 		}
@@ -36,12 +53,7 @@ class LichHuongDanController {
 		const session = await mongoose.startSession();
 		try {
 			session.startTransaction();
-			let { mapt, chitiet, ...lichhdInfo } = req.body;
-			const pt = await PTModel.findById(mapt);
-			if (!pt)
-				throw new Error(
-					"Không tìm thấy pt có mã là" + mapt
-				);
+			let { chitiet, ...lichhdInfo } = req.body;
 			// Initialize timetable map
 			const chitietCopy = [];
 			const timetable = new Map();
@@ -50,6 +62,8 @@ class LichHuongDanController {
 			}
 			while (chitiet.length > 0) {
 				const buoiTap = chitiet.pop();
+				const thu =
+					new Date(buoiTap.giobd).getDay() + 1;
 				const khach = await KhachModel.findById(
 					buoiTap.makhach
 				).session(session);
@@ -58,23 +72,32 @@ class LichHuongDanController {
 						"Không tồn tại khách hàng có mã" +
 							buoiTap.makhach
 					);
+				const pt = await PTModel.findById(
+					buoiTap.mapt
+				).session(session);
+				if (!pt)
+					throw new Error(
+						"Không tìm thấy pt có mã là" +
+							buoiTap.mapt
+					);
 				chitietCopy.push({
-					thu: buoiTap.thu,
 					giobd: buoiTap.giobd,
 					khach,
+					pt,
+					thu,
 				});
-				timetable.set(buoiTap.thu, [
-					...timetable.get(buoiTap.thu),
+				timetable.set(thu, [
+					...timetable.get(thu),
 					{
-						thu: buoiTap.thu,
+						thu,
 						giobd: buoiTap.giobd,
 						khach,
+						pt,
 					},
 				]);
 			}
 			const newTKB = new LichHuongDanModel({
 				...lichhdInfo,
-				pt,
 				chitiet: chitietCopy,
 			});
 			const newRecord = await newTKB.save({
@@ -141,6 +164,10 @@ class LichHuongDanController {
 			const lichhd = await LichHuongDanModel.findById(
 				id
 			);
+			if (!lichhd)
+				throw new Error(
+					"Không tồn tại lịch hướng dẫn này"
+				);
 			const chitiet = lichhd.chitiet;
 			const timetable = new Map();
 			for (let i = 2; i <= 8; i++) {

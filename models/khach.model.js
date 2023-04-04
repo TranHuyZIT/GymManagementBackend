@@ -1,5 +1,6 @@
 /* eslint-disable valid-typeof */
 const mongoose = require("mongoose");
+const autoIncrement = require("mongoose-auto-increment");
 const MongooseService = require("~/services/mongoose.service");
 const DkyTapSchema =
 	require("~/models/dkytap.model").schema;
@@ -37,7 +38,12 @@ const Khach = new mongoose.Schema(
 );
 
 MongooseService.setupSoftDelete(Khach);
-
+autoIncrement.initialize(mongoose.connection);
+Khach.plugin(autoIncrement.plugin, {
+	model: "HoaDon",
+	field: "id",
+	startAt: 1000,
+});
 module.exports = {
 	schema: Khach,
 	model: mongoose.model("Khach", Khach),

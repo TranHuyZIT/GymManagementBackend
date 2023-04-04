@@ -100,7 +100,7 @@ class PTController {
 			});
 			const totalRows = await PTModel.count(filter);
 			return res.status(200).json({
-				data: allPTs.at,
+				data: allPTs,
 				totalRows,
 			});
 		} catch (error) {

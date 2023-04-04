@@ -42,6 +42,7 @@ class PhieuNhapController {
 	 * @param {Function} next
 	 */
 	async lapphieunhap(req, res) {
+		console.log(req.body);
 		const session = await mongoose.startSession();
 		try {
 			session.startTransaction();

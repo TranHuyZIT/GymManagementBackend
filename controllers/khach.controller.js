@@ -30,8 +30,28 @@ class KhachController {
 	async laymot(req, res) {
 		try {
 			const id = req.params.id;
-			const khach = await KhachModel.findById(id);
-			return res.status(200).json(khach);
+			const khach = await KhachModel.findById(
+				id
+			).sort([]);
+			const dkytap = khach.dkytap.sort((a, b) => {
+				return (
+					new Date(b.ngayhethan) -
+					new Date(a.ngayhethan)
+				);
+			});
+			const dkypt = khach.dkypt.sort((a, b) => {
+				return (
+					new Date(b.ngayhethan) -
+					new Date(a.ngayhethan)
+				);
+			});
+			return res.status(200).json({
+				...khach.toJSON(),
+				dkypt,
+				dkytap,
+				ngayHetHanTap: dkytap[0].ngayhethan,
+				ngayHetHanPT: dkypt[0].ngayhethan,
+			});
 		} catch (error) {
 			res.send({
 				msg: error.message,
@@ -48,11 +68,12 @@ class KhachController {
 		try {
 			const offset = req.query.offset || 0;
 			const pageSize = req.query.pageSize || null;
-			const name = req.query.name || null;
+			const term = req.query.term || null;
+			const searchBy = req.query.searchBy || null;
 			const filter = {};
-			if (name) {
-				filter["ten"] = {
-					$regex: name,
+			if (term) {
+				filter[searchBy] = {
+					$regex: term,
 					$options: "i",
 				};
 			}
@@ -64,7 +85,6 @@ class KhachController {
 					limit: pageSize,
 				}
 			);
-			console.log(allKhachs);
 			const totalRows = await KhachModel.count(
 				filter
 			);

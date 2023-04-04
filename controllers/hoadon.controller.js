@@ -1,7 +1,9 @@
 const { default: mongoose } = require("mongoose");
+const { addDays } = require("~/utils/common.util");
 
 const KhachModel = require("~/models/khach.model").model;
-
+const NhanVienModel =
+	require("~/models/nhanvien.model").model;
 const HoaDonModel = require("~/models/hoadon.model").model;
 const DkyTapModel = require("~/models/dkytap.model").model;
 const DkyPTModel = require("~/models/dkypt.model").model;
@@ -20,6 +22,12 @@ class HoaDonController {
 		try {
 			session.startTransaction();
 			const currentUser = req.currentUser;
+			const nhanvien = await NhanVienModel.findOne({
+				user: currentUser._id,
+			});
+			if (!nhanvien)
+				throw new Error("Vui lòng đăng nhập lại");
+			console.log(nhanvien);
 			const {
 				dkytap,
 				dkypt,
@@ -48,9 +56,12 @@ class HoaDonController {
 							magoitap
 					);
 				tongtien += goitap.gia;
+				const ngayhethan = addDays(goitap.songay);
 				const newDky = new DkyTapModel({
+					makhach: khach._id,
 					...dkyInfo,
 					goitap,
+					ngayhethan: ngayhethan,
 				});
 				const newDkyRecord = await newDky.save({
 					session,
@@ -69,9 +80,12 @@ class HoaDonController {
 						"Không tồn tại gói pt với mã " +
 							magoipt
 					);
+				const ngayhethan = addDays(goipt.songay);
 				const newDky = new DkyPTModel({
+					makhach: khach._id,
 					...dkyInfo,
 					goipt,
+					ngayhethan,
 				});
 				const newDkyRecord = await newDky.save({
 					session,
@@ -90,13 +104,14 @@ class HoaDonController {
 			}
 			const newHoaDon = new HoaDonModel(
 				{
-					manv: currentUser._id,
-					makhach,
+					manv: nhanvien._id,
+					khach,
 					info,
 					dkytap: dkyTapRecords,
 					dkypt: dkyPTRecords,
 					khuyenmai: khuyenmaiRecord,
 					tongtien,
+					ngaylap: info.ngaylap,
 				},
 				{
 					session,
@@ -122,13 +137,25 @@ class HoaDonController {
 	 */
 	async laytatcahoadon(req, res) {
 		try {
-			const allHoaDons =
-				await HoaDonModel.find().select(
-					"-dkytap -dkypt"
-				);
-			return res.status(200).json(allHoaDons);
+			const offset = req.query.offset || 0;
+			const pageSize = req.query.pageSize || null;
+			const allHoaDons = await HoaDonModel.find(
+				{},
+				"",
+				{
+					skip: offset,
+					limit: pageSize,
+				}
+			)
+				.select("-khach.dkytap -khach.dkypt")
+				.populate("manv");
+			const totalRows = await HoaDonModel.count({});
+			return res.status(200).json({
+				data: allHoaDons,
+				totalRows,
+			});
 		} catch (error) {
-			res.send({
+			res.status(400).send({
 				message: error.message,
 			});
 		}
