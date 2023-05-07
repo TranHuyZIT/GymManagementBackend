@@ -4,6 +4,7 @@ const autoIncrement = require("mongoose-auto-increment");
 const MongooseService = require("~/services/mongoose.service");
 const DkyTapSchema =
 	require("~/models/dkytap.model").schema;
+const UserSchema = require("~/models/users.model").schema;
 const DkyPTSchema = require("~/models/dkypt.model").schema;
 const Khach = new mongoose.Schema(
 	{
@@ -30,6 +31,10 @@ const Khach = new mongoose.Schema(
 			type: Boolean,
 			require: true,
 			default: false,
+		},
+		user: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
 		},
 	},
 	{

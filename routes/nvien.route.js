@@ -5,14 +5,21 @@ const {
 	laymotnvien,
 	xoanvien,
 } = require("~/controllers/nhanvien.controller");
+const {
+	userAuth,
+	adminAuth,
+} = require("~/middlewares/authentication");
 
 const router = require("express").Router();
 
-router.route("/").get(laytatcanvien).post(dkynvien);
+router
+	.route("/")
+	.get(userAuth, adminAuth, laytatcanvien)
+	.post(dkynvien);
 router
 	.route("/:id")
-	.put(capnhatnvien)
+	.put(userAuth, adminAuth, capnhatnvien)
 	.get(laymotnvien)
-	.delete(xoanvien);
+	.delete(userAuth, adminAuth, xoanvien);
 
 module.exports = router;

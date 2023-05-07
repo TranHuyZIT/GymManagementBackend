@@ -16,6 +16,11 @@ const DkyTap = new mongoose.Schema(
 			require: true,
 		},
 		goitap: GoiTapSChema,
+		isChecked: {
+			type: Boolean,
+			default: false,
+			require: true,
+		},
 	},
 	{
 		timestamps: true,

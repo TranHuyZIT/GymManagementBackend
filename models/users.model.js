@@ -13,6 +13,7 @@ const User = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		laKhach: { type: Boolean, default: false },
 		ten: {
 			type: String,
 			require: true,

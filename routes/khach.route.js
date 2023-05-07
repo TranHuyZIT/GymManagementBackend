@@ -3,12 +3,29 @@ const {
 	xoa,
 	capnhat,
 	laymot,
-	dky,
+	dkykhach,
+	getHistoryGoiTap,
+	getHistoryGoiPT,
+	getSelfInfo,
 } = require("~/controllers/khach.controller");
+const {
+	userAuth,
+	adminAuth,
+} = require("~/middlewares/authentication");
 
 const router = require("express").Router();
 
-router.route("/").get(laytatca).post(dky);
-router.route("/:id").get(laymot).put(capnhat).delete(xoa);
+router
+	.route("/")
+	.get(userAuth, adminAuth, laytatca)
+	.post(dkykhach);
+router.route("/history/goitap/:id").get(getHistoryGoiTap);
+router.route("/history/goipt/:id").get(getHistoryGoiPT);
+router.route("/info").get(getSelfInfo);
+router
+	.route("/:id")
+	.get(userAuth, laymot)
+	.put(userAuth, adminAuth, capnhat)
+	.delete(userAuth, adminAuth, xoa);
 
 module.exports = router;

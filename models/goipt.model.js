@@ -16,6 +16,10 @@ const GoiPT = new mongoose.Schema({
 		require: true,
 		min: [0, "Giá tiền gói tập phải lớn hơn 0"],
 	},
+	mota: {
+		type: String,
+		require: true,
+	},
 	isDeleted: {
 		type: Boolean,
 		default: false,

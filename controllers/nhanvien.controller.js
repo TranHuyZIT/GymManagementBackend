@@ -51,7 +51,7 @@ class NhanVienController {
 		} catch (error) {
 			await session.abortTransaction();
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 		await session.endSession();
@@ -69,7 +69,7 @@ class NhanVienController {
 			return res.status(200).json(nvien);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -108,7 +108,7 @@ class NhanVienController {
 			});
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -132,7 +132,7 @@ class NhanVienController {
 			return res.status(200).json(result);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}
@@ -154,7 +154,7 @@ class NhanVienController {
 			return res.status(200).json(result);
 		} catch (error) {
 			res.send({
-				msg: error.message,
+				message: error.message,
 			});
 		}
 	}

@@ -19,6 +19,11 @@ const DkyPT = new mongoose.Schema(
 			require: true,
 		},
 		goipt: GoiPTSchema,
+		isChecked: {
+			type: Boolean,
+			default: false,
+			require: true,
+		},
 	},
 	{
 		timestamps: true,

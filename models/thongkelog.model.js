@@ -9,11 +9,14 @@ const ThongKeLog = new mongoose.Schema(
 			require: true,
 		},
 		tien: {
-			type: BigInt,
+			type: Number,
 			require: true,
 			default: 0,
 		},
-		nhanvien: NhanVienSchema,
+		nhanvien: {
+			type: NhanVienSchema,
+			unique: false,
+		},
 	},
 	{
 		timestamps: true,
