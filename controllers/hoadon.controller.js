@@ -11,6 +11,8 @@ const GoiTapModel = require("~/models/goitap.model").model;
 const GoiPTModel = require("~/models/goipt.model").model;
 const KhuyenMaiModel =
 	require("~/models/khuyenmai.model").model;
+const ThongKeLogModel =
+	require("~/models/thongkelog.model").model;
 class HoaDonController {
 	/**
 	 *
@@ -21,13 +23,19 @@ class HoaDonController {
 		const session = await mongoose.startSession();
 		try {
 			const currentUser = req.currentUser;
+			if (!currentUser)
+				res.status(401).send({
+					message: "Vui lòng đăng nhập lại",
+				});
 			const nhanvien = await NhanVienModel.findOne({
 				user: currentUser._id,
-			});
+			}).then((data) => data.toJSON());
 			if (!nhanvien)
-				throw new Error("Vui lòng đăng nhập lại");
-			console.log(nhanvien);
-			const { mahoadon } = req.params;
+				throw new Error(
+					"Không tồn tại nhân viên này"
+				);
+			session.startTransaction();
+			const mahoadon = req.params.id;
 			let hoadon = await HoaDonModel.findById(
 				mahoadon
 			);
@@ -36,32 +44,74 @@ class HoaDonController {
 					"Không tồn tại hóa đơn này"
 				);
 			hoadon = hoadon.toJSON();
+			if (hoadon.isChecked)
+				throw new Error(
+					"Hóa đơn này đã được duyệt trước đó!"
+				);
 			for (const dkytap of hoadon.dkytap) {
 				await DkyTapModel.findOneAndUpdate(
 					{ _id: dkytap._id },
 					{ ...dkytap, isChecked: true }
-				);
+				).session(session);
+				await KhachModel.updateOne(
+					{
+						id: hoadon.khach.id,
+						"dkytap._id": dkytap._id,
+					},
+					{
+						$set: {
+							"dkytap.$.isChecked": true,
+						},
+					}
+				).session(session);
+				await HoaDonModel.updateOne(
+					{
+						_id: hoadon._id,
+						"dkytap._id": dkytap._id,
+					},
+					{
+						$set: {
+							"dkytap.$.isChecked": true,
+						},
+					}
+				).session(session);
 			}
+			console.log(hoadon);
 			for (const dkypt of hoadon.dkypt) {
 				await DkyPTModel.findOneAndUpdate(
 					{ _id: dkypt._id },
 					{ ...dkypt, isChecked: true }
-				);
+				).session(session);
+				await KhachModel.updateOne(
+					{
+						id: hoadon.khach.id,
+						"dkypt._id": dkypt._id,
+					},
+					{ $set: { "dkypt.$.isChecked": true } }
+				).session(session);
+				await HoaDonModel.updateOne(
+					{
+						_id: hoadon._id,
+						"dkypt._id": dkypt._id,
+					},
+					{ $set: { "dkypt.$.isChecked": true } }
+				).session(session);
 			}
 			await HoaDonModel.updateOne(
 				{
-					_id: mahoadon,
-					isChecked: true,
+					_id: hoadon._id,
 				},
-				{
-					...hoadon,
-					nhanvien,
-				}
-			);
+				{ isChecked: true, manv: nhanvien._id }
+			).session(session);
+			hoadon = await HoaDonModel.findById(
+				mahoadon
+			).session(session);
+			console.log(hoadon);
+			await session.commitTransaction();
 			return res.status(200).json(hoadon);
 		} catch (error) {
 			await session.abortTransaction();
-			res.send({
+			res.status(500).send({
 				message: error.message,
 			});
 		}
@@ -92,8 +142,8 @@ class HoaDonController {
 			let tongtien = 0;
 			const dkyTapRecords = [];
 			for (const dky of dkytap) {
-				const { magoitap, ngaydk, ...dkyInfo } =
-					dky;
+				const { magoitap, ...dkyInfo } = dky;
+				const ngaydk = new Date();
 				const goitap = await GoiTapModel.findById(
 					magoitap
 				);
@@ -111,6 +161,7 @@ class HoaDonController {
 					makhach: khach._id,
 					...dkyInfo,
 					goitap,
+					ngaydk,
 					ngayhethan: ngayhethan,
 					isChecked: false,
 				});
@@ -122,7 +173,9 @@ class HoaDonController {
 			}
 			const dkyPTRecords = [];
 			for (const dky of dkypt) {
-				const { magoipt, ngaydk, ...dkyInfo } = dky;
+				const { magoipt, ...dkyInfo } = dky;
+				const ngaydk = new Date();
+
 				const goipt = await GoiPTModel.findById(
 					magoipt
 				);
@@ -138,6 +191,7 @@ class HoaDonController {
 				const newDky = new DkyPTModel({
 					makhach: khach._id,
 					...dkyInfo,
+					ngaydk,
 					goipt,
 					ngayhethan,
 					isChecked: false,
@@ -230,7 +284,10 @@ class HoaDonController {
 							magoitap
 					);
 				tongtien += goitap.gia;
-				const ngayhethan = addDays(goitap.songay);
+				const ngayhethan = addDays(
+					dky.ngaydk,
+					goitap.songay
+				);
 				const newDky = new DkyTapModel({
 					makhach: khach._id,
 					...dkyInfo,
@@ -255,7 +312,10 @@ class HoaDonController {
 						"Không tồn tại gói pt với mã " +
 							magoipt
 					);
-				const ngayhethan = addDays(goipt.songay);
+				const ngayhethan = addDays(
+					dky.ngaydk,
+					goipt.songay
+				);
 				const newDky = new DkyPTModel({
 					makhach: khach._id,
 					...dkyInfo,
@@ -295,7 +355,15 @@ class HoaDonController {
 				}
 			);
 			await newHoaDon.save({ session });
-			await khach.save({ session });
+			const thongkeLog = new ThongKeLogModel({
+				nhanvien,
+				tien: tongtien,
+				loai: true,
+			});
+			await thongkeLog.save({ session });
+			await khach.save({
+				session,
+			});
 
 			await session.commitTransaction();
 			return res.status(200).json(newHoaDon);
@@ -325,9 +393,15 @@ class HoaDonController {
 					$options: "i",
 				};
 			}
-			if (checked != null) {
-				where["isChecked"] = checked;
+			switch (checked) {
+				case null:
+					where["isChecked"] = false;
+					break;
+				default:
+					where["isChecked"] = true;
+					break;
 			}
+			console.log(where);
 			const allHoaDons = await HoaDonModel.find(
 				where,
 				"",
@@ -381,7 +455,7 @@ class HoaDonController {
 			});
 			return res.status(200).json(result);
 		} catch (error) {
-			res.send({
+			return res.status(400).send({
 				message: error.message,
 			});
 		}

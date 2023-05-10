@@ -82,6 +82,71 @@ class LichHuongDanController {
 	 * @param {import('express').Response} res
 	 * @param {Function} next
 	 */
+	async layLichChoPT(req, res) {
+		try {
+			const currentUser = req.currentUser;
+			const latestLich =
+				await LichHuongDanModel.findOne(
+					{},
+					{},
+					{ sort: { createdAt: -1 } }
+				).then((data) => data.toJSON());
+			const chitiet = latestLich.chitiet;
+
+			const dateRange = [];
+			let loop = new Date(latestLich.ngaybd);
+			const end = new Date(latestLich.ngaykt);
+			while (loop <= end) {
+				dateRange.push({
+					thu:
+						loop.getDay() === 0
+							? 8
+							: loop.getDay() + 1,
+					date: loop.toISOString(),
+				});
+				const newDate = loop.setDate(
+					loop.getDate() + 1
+				);
+				loop = new Date(newDate);
+			}
+			const timetable = new Map();
+			for (let i = 2; i <= 8; i++) {
+				timetable.set(i, []);
+			}
+
+			while (chitiet.length > 0) {
+				const buoiTap = chitiet.pop();
+				if (
+					buoiTap.pt.user.toString() !=
+					currentUser._id
+				)
+					continue;
+				timetable.set(buoiTap.thu, [
+					...timetable.get(buoiTap.thu),
+					{
+						...buoiTap,
+					},
+				]);
+			}
+			console.log(chitiet);
+			return res.status(200).json({
+				...latestLich,
+				chitiet: Object.fromEntries(timetable),
+				range: dateRange,
+			});
+		} catch (error) {
+			return res.status(500).json({
+				message: error.message,
+			});
+		}
+	}
+
+	/**
+	 *
+	 * @param {import('express').Request} req
+	 * @param {import('express').Response} res
+	 * @param {Function} next
+	 */
 	async laytatcalichhd(req, res) {
 		try {
 			const { mapt } = req.query;

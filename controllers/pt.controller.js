@@ -2,7 +2,55 @@ const PasswordUtil = require("~/utils/password.util");
 const mongoose = require("mongoose");
 const PTModel = require("~/models/pt.model").model;
 const UserModel = require("~/models/users.model").model;
+const DkyPTModel = require("~/models/dkypt.model").model;
 class PTController {
+	/**
+	 *
+	 * @param {import('express').Request} req
+	 * @param {import('express').Response} res
+	 * @param {Function} next
+	 */
+	async laythongtinprofile(req, res) {
+		try {
+			const currentUser = req.currentUser;
+			if (!currentUser)
+				res.status(401).send({
+					message: "Vui lòng đăng nhập lại",
+				});
+			const pt = await PTModel.findOne({
+				user: currentUser._id,
+			}).then((data) => data.toJSON());
+			if (!pt)
+				throw new Error(
+					"Không tìm thấy thông tin người PT này!"
+				);
+
+			const allDky = await DkyPTModel.find(
+				{
+					mapt: pt._id,
+					isChecked: true,
+				},
+				{},
+				{
+					sort: {
+						ngayhethan: -1,
+					},
+				}
+			)
+				.populate("makhach")
+				.then((data) =>
+					data.map((e) => e.toJSON())
+				);
+
+			return res
+				.status(200)
+				.json({ ...pt, khach: allDky });
+		} catch (error) {
+			return res
+				.status(500)
+				.json({ message: error.message });
+		}
+	}
 	/**
 	 *
 	 * @param {import('express').Request} req
@@ -164,10 +212,11 @@ class PTController {
 				},
 				req.body
 			);
+			console.log(req.body);
 			return res.status(200).json(result);
 		} catch (error) {
-			res.send({
-				msg: error.message,
+			res.status(400).send({
+				message: error.message,
 			});
 		}
 	}

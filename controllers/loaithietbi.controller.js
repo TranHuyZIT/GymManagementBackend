@@ -25,7 +25,9 @@ class LoaiThietBiController {
 				totalRows: total,
 			});
 		} catch (error) {
-			res.send({ message: error.message });
+			return res
+				.status(500)
+				.send({ message: error.message });
 		}
 	}
 	/**

@@ -139,13 +139,20 @@ class EntranceLogController {
 				throw new Error(
 					"Không tìm thấy khách có mã là" + id
 				);
-			const latestDkyTap = khach.dkytap.reduce(
-				(acc, current) =>
-					current?.ngayhethan > acc?.ngayhethan
-						? current
-						: acc,
-				[khach.dkytap[0]]
-			)[0];
+			let latestDkyTap;
+			if (khach.dkytap.length > 0) {
+				latestDkyTap = khach.dkytap.reduce(
+					(acc, current) =>
+						current?.ngayhethan &&
+						current.isChecked > acc?.ngayhethan
+							? current
+							: acc,
+					[khach.dkytap[0]]
+				)[0];
+			} else {
+				latestDkyTap = "";
+			}
+			console.log(latestDkyTap);
 			const currentDate = new Date();
 			const isExpired = latestDkyTap
 				? currentDate > latestDkyTap.ngayhethan

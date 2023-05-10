@@ -125,6 +125,7 @@ class AuthController {
 					info: khach,
 				});
 			}
+			console.log(rest);
 			if (rest.lapt) {
 				const pt = await PTModel.findOne({
 					user: currentUser._id,

@@ -104,8 +104,8 @@ class KhachController {
 			return res.status(200).json(newKhach);
 		} catch (error) {
 			await session.abortTransaction();
-			res.send({
-				msg: error.message,
+			res.status(400).send({
+				message: error.message,
 			});
 		}
 		await session.endSession();
@@ -122,28 +122,46 @@ class KhachController {
 			const khach = await KhachModel.findById(
 				id
 			).sort([]);
-			const dkytap = khach.dkytap.sort((a, b) => {
+			let ngayHetHanTap = "",
+				ngayHetHanPT = "";
+			let dkytap = khach.dkytap.sort((a, b) => {
 				return (
 					new Date(b.ngayhethan) -
 					new Date(a.ngayhethan)
 				);
 			});
-			const dkypt = khach.dkypt.sort((a, b) => {
+			for (const dky of dkytap) {
+				if (
+					dky.isChecked &&
+					new Date(dky.ngayhethan) - new Date(dky)
+				) {
+					ngayHetHanTap = dky.ngayhethan;
+				}
+			}
+			let dkypt = khach.dkypt.sort((a, b) => {
 				return (
 					new Date(b.ngayhethan) -
 					new Date(a.ngayhethan)
 				);
 			});
+			for (const dky of dkypt) {
+				if (
+					dky.isChecked &&
+					new Date(dky.ngayhethan) - new Date(dky)
+				) {
+					ngayHetHanPT = dky.ngayhethan;
+				}
+			}
 			return res.status(200).json({
 				...khach.toJSON(),
 				dkypt,
 				dkytap,
-				ngayHetHanTap: dkytap[0]?.ngayhethan || "",
-				ngayHetHanPT: dkypt[0]?.ngayhethan || "",
+				ngayHetHanTap,
+				ngayHetHanPT,
 			});
 		} catch (error) {
-			res.send({
-				msg: error.message,
+			res.status(400).send({
+				message: error.message,
 			});
 		}
 	}
@@ -182,8 +200,8 @@ class KhachController {
 				data: allKhachs,
 			});
 		} catch (error) {
-			res.send({
-				msg: error.message,
+			res.status(400).send({
+				message: error.message,
 			});
 		}
 	}
@@ -206,9 +224,28 @@ class KhachController {
 			);
 			return res.status(200).json(result);
 		} catch (error) {
-			res.send({
-				msg: error.message,
+			res.status(400).send({
+				message: error.message,
 			});
+		}
+	}
+	/**
+	 *
+	 * @param {import('express').Request} req
+	 * @param {import('express').Response} res
+	 * @param {Function} next
+	 */
+	async taoKhach(req, res) {
+		try {
+			const newKhach = new KhachModel({
+				...req.body,
+			});
+			const saved = await newKhach.save();
+			return res.status(200).json(saved);
+		} catch (error) {
+			return res
+				.status(400)
+				.json({ message: error.message });
 		}
 	}
 	/**

@@ -7,6 +7,7 @@ const ThongKeLog = new mongoose.Schema(
 		loai: {
 			type: Boolean,
 			require: true,
+			default: true,
 		},
 		tien: {
 			type: Number,
