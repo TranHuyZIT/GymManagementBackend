@@ -2,10 +2,11 @@ const {
 	default: mongoose,
 	startSession,
 } = require("mongoose");
-
+const { v4: uuidv4 } = require("uuid");
 const LichHuongDanModel =
 	require("~/models/lichhuongdan.model").model;
-
+const ChiTietLichHuongDanModel =
+	require("~/models/chitietlichhd.model").model;
 const PTModel = require("~/models/pt.model").model;
 const KhachModel = require("~/models/khach.model").model;
 class LichHuongDanController {
@@ -43,7 +44,6 @@ class LichHuongDanController {
 				);
 				loop = new Date(newDate);
 			}
-			console.log(dateRange);
 			const timetable = new Map();
 			for (let i = 2; i <= 8; i++) {
 				timetable.set(i, []);
@@ -51,9 +51,9 @@ class LichHuongDanController {
 
 			while (chitiet.length > 0) {
 				const buoiTap = chitiet.pop();
-				console.log(buoiTap.khach);
+				console.log(buoiTap);
 				if (
-					buoiTap.khach.user.toString() !=
+					buoiTap.khach.user?.toString() !=
 					currentUser._id
 				)
 					continue;
@@ -212,12 +212,18 @@ class LichHuongDanController {
 						"Không tìm thấy pt có mã là" +
 							buoiTap.mapt
 					);
-				chitietCopy.push({
-					giobd: buoiTap.giobd,
-					khach,
-					pt,
-					thu,
+				let newChiTiet =
+					new ChiTietLichHuongDanModel({
+						giobd: buoiTap.giobd,
+						khach,
+						pt,
+						thu,
+					});
+				newChiTiet = await newChiTiet.save({
+					session,
 				});
+				console.log(newChiTiet);
+				chitietCopy.push(newChiTiet);
 				timetable.set(thu, [
 					...timetable.get(thu),
 					{

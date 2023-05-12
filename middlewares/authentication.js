@@ -32,6 +32,7 @@ class AuthenticationMiddleWares {
 				decodedUser._id
 			);
 			req.currentUser = user;
+			console.log(req.currentUser);
 			next();
 		} catch (error) {
 			res.status(401).send({

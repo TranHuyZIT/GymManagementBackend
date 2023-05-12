@@ -16,6 +16,7 @@ class KhachController {
 	async getSelfInfo(req, res) {
 		try {
 			const currentUser = req.currentUser;
+			console.log(currentUser);
 			const khach = await KhachModel.findOne({
 				user: currentUser?._id,
 			}).populate({
@@ -64,6 +65,7 @@ class KhachController {
 	 */
 	async dkykhach(req, res) {
 		const session = await mongoose.startSession();
+		console.log(req.body);
 		try {
 			session.startTransaction();
 			// Tạo user
@@ -88,7 +90,6 @@ class KhachController {
 				],
 				{ session }
 			);
-
 			const newKhach = await KhachModel.create(
 				[
 					{

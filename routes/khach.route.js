@@ -23,7 +23,7 @@ router
 router.route("/tao").post(taoKhach);
 router.route("/history/goitap/:id").get(getHistoryGoiTap);
 router.route("/history/goipt/:id").get(getHistoryGoiPT);
-router.route("/info").get(getSelfInfo);
+router.route("/info").get(userAuth, getSelfInfo);
 router
 	.route("/:id")
 	.get(userAuth, laymot)
